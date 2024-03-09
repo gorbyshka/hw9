@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { UserModule } from './controllers/user.module';
+import { UserModule } from './module/user.module';
 
 async function bootstrap() {
   

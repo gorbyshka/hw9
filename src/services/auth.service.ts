@@ -21,10 +21,9 @@ export class AuthService {
         try {
 
             const payload = { email: user.email, sub: user._id };
-
             return jwt.sign(payload, '123', { expiresIn: '15m' });
 
-        } catch (e) { throw new Error('Not created aceessToken'); }
+        } catch (e) { throw new Error('Not created accessToken'); }
 
     }
 
@@ -47,6 +46,53 @@ export class AuthService {
             return true;
 
         } catch (err) { return false; }
+    }
+
+    async signUp(email: string, password: string): Promise<any> {
+
+        const user = await this.userService.createUser(email, password);
+
+        const accessToken = await this.createAccessToken(user);
+
+        return {
+
+            message: 'User created successfully',
+            user,
+            accessToken,
+
+        };
+
+    }
+
+    async signIn(user: any): Promise<any> {
+
+        const refreshToken = await this.createRefreshToken(user);
+
+        return {
+
+            message: 'User signed in successfully',
+            refreshToken,
+
+        };
+
+    }
+
+    async getProfile(user: any, authorizationHeader: string): Promise<any> {
+
+        const refreshToken = authorizationHeader.split(' ')[1];
+
+        if (!refreshToken) throw new Error('Refresh token is required');
+
+        const isValidRefreshToken = await this.verifyToken(refreshToken);
+
+        if (!isValidRefreshToken) throw new Error('Invalid refresh token');
+
+        return {
+
+            message: 'User profile retrieved successfully',
+            user,
+
+        };
 
     }
 
